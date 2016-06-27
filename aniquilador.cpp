@@ -142,21 +142,19 @@ OnPCKillEvent:
 		if((@map$ == "force_1-1")&& ($acontecendoaniquilador ==1)){
 			query_sql "SELECT `char_id` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@CID;
 		if(!.@CID){
-	query_sql "INSERT INTO `rankingmodes` (char_id,account_id)VALUES('"+getcharid(0)+"','"+getcharid(3)+"')";
+			query_sql "INSERT INTO `rankingmodes` (char_id,account_id)VALUES('"+getcharid(0)+"','"+getcharid(3)+"')";
 		}
 		if(#matou == killedrid) end;
-			set #matou, killedrid; 
-			
-
+			set #matou, killedrid; 		
 	// -- temporario
 	query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
 	query_sql "UPDATE `rankingmodes` SET `temp` = '"+(.@pontos+1)+"' WHERE `char_id` = '"+getcharid(0)+"'";
 	query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
 	if((.@pontos) == 1 ||(.@pontos) == -1 ){ dispbottom "Você possui "+(.@pontos)+" ponto."; } else { dispbottom "Você possui "+(.@pontos)+" pontos."; }
-	end;
+		end;
 	}
 	end;
-	}
+}
 
     
 -	script	Arena_PvP#Die	-1,{
@@ -217,13 +215,7 @@ OnPCDieEvent:
 		announce "O evento [Aniquilador] Acabou, parabéns a todos!!",0,0x009ACD;
 		cleararray .@charid[0],0,999;
 		cleararray .@rank[0],0,999;
-		
-		
 		query_sql "SELECT `temp`, `char_id` FROM (SELECT `temp`,`char_id` FROM `rankingmodes` WHERE `temp`> 0 ORDER BY RAND())RESULTS ORDER BY `temp` DESC LIMIT 3",.@rank,.@charid; 
-
-
-
-		
 		//query_sql "SELECT `temp`, `char_id` FROM `rankingmodes` WHERE `temp` > 0 ORDER BY `temp` DESC LIMIT 5",.@rank,.@charid;	
 		//query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid+"'",.@name$,.@account_id;
 		if(getarraysize(.@rank)==0 ){
@@ -237,198 +229,186 @@ OnPCDieEvent:
 			else  {set .@Empate,03;}
 		}
 		if(getarraysize(.@rank)==3 ){
-		
-			 if ((.@rank[0] == .@rank[1]) && (.@rank[1] == .@rank[2])) set .@Empate,02;//1,2,3 
+			if ((.@rank[0] == .@rank[1]) && (.@rank[1] == .@rank[2])) set .@Empate,02;//1,2,3 
 			else if ((.@rank[0] == .@rank[1]) && (.@rank[1] != .@rank[2])) set .@Empate,00;//1,2          00
 			else if ((.@rank[0] != .@rank[1]) && (.@rank[1] == .@rank[2]))  set .@Empate,01;//2,3                               
 			else set .@Empate,03;
-
 		}
-
 		if(.@Empate == 00){ 
 			announce "Houve empate entre os dois primeiros colocados, um sorteiro foi feito para definir o vencedor.",0,0x009ACD;
 			callfunc "randnumber",2,0,1;
 			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
-			query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
-		if(.@i == @p[0]  ) {
-			set .@primeiro$,.@name$;
-			set .@ranking1, .@rank[0];
-			set .@id_prem, 607;
-			set .@qtd,5;
-				//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
-			
-		}else if (.@i== @p[1] ) {   
-			set .@segundo$,.@name$;
-			set .@ranking2, .@rank[1];
-			set .@id_prem, 607;
-			set .@qtd,3;
-			
-			//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
-		}else if(.@i == 2  ){  
-			set .@terceiro$,.@name$;
-			set .@ranking3, .@rank[2];
-			set .@id_prem, 607;
-			set .@qtd,2;
-			
-			//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
-		}	
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == @p[0]  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i== @p[1] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == 2  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}	
+			}
 		}
-		}
-		
 		if(.@Empate == 01){
-		announce "Houve empate entre o terceiro e o segundo colocado, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
+			announce "Houve empate entre o terceiro e o segundo colocado, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
 			callfunc "randnumber",2,1,2;
-	for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
-	query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
-		if(.@i == 0  ) {
-			set .@primeiro$,.@name$;
-			set .@ranking1, .@rank[0];
-			set .@id_prem, 607;
-			set .@qtd,5;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
-					}else if (.@i==@p[0] ) {   
-			set .@segundo$,.@name$;
-			set .@ranking2, .@rank[1];
-			set .@id_prem, 607;
-			set .@qtd,3;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
-					}else if(.@i == @p[1]  ){  
-			set .@terceiro$,.@name$;
-			set .@ranking3, .@rank[2];
-			set .@id_prem, 607;
-			set .@qtd,2;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
-					}
-			
-		}
-		}
-	
-		if(.@Empate == 02){
-		announce "Houve empate entre os três primeiros colocados, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
-		callfunc "randnumber",3,0,2;
 			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
-	query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
-		if(.@i == @p[0]  ) {
-			set .@primeiro$,.@name$;
-			set .@ranking1, .@rank[0];
-			set .@id_prem, 607;
-			set .@qtd,5;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
-					}else if (.@i==@p[1] ) {   
-			set .@segundo$,.@name$;
-			set .@ranking2, .@rank[1];
-			set .@id_prem, 607;
-			set .@qtd,3;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
-					}else if(.@i == @p[2]  ){  
-			set .@terceiro$,.@name$;
-			set .@ranking3, .@rank[2];
-			set .@id_prem, 607;
-			set .@qtd,2;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
-					}
-			
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == 0  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==@p[0] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == @p[1]  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
 		}
+		if(.@Empate == 02){
+			announce "Houve empate entre os três primeiros colocados, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
+			callfunc "randnumber",3,0,2;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == @p[0]  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==@p[1] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == @p[2]  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
 		}
-		
 		if(.@Empate == 03){
-		announce "Uma vitória justa! Partida sem empates.",0,0x009ACD;
-		for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
-	query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
-		if(.@i == 0  ) {
-			set .@primeiro$,.@name$;
-			set .@ranking1, .@rank[0];
-			set .@id_prem, 607;
-			set .@qtd,5;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
-					}else if (.@i==1 ) {   
-			set .@segundo$,.@name$;
-			set .@ranking2, .@rank[1];
-			set .@id_prem, 607;
-			set .@qtd,3;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
-					}else if(.@i == 2  ){  
-			set .@terceiro$,.@name$;
-			set .@ranking3, .@rank[2];
-			set .@id_prem, 607;
-			set .@qtd,2;
-//atualiza o geral
-			query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-	//atualiza o mensal
-			query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
-			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
-			query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
-					}
+			announce "Uma vitória justa! Partida sem empates.",0,0x009ACD;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == 0  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==1 ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == 2  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
 		}
-		}
-		
 		if(.@Empate == 10){
 			set $acontecendoaniquilador,0;	
 			announce "Não houve vencedores no evento [ Aniquilador ], boa sorte na próxima!",0,0x009ACD;
@@ -439,14 +419,479 @@ OnPCDieEvent:
 			end; 
 		}
 		
-		
 		if(!.@terceiro$){
-		announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos, "+ " 2º lugar: "+.@segundo$+"["+.@ranking2+"] pontos",0,0x009ACD;
+			announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos, "+ " 2º lugar: "+.@segundo$+"["+.@ranking2+"] pontos",0,0x009ACD;
 		}
 		if(!.@segundo$){
-		announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos",0,0x009ACD;
+			announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos",0,0x009ACD;
+		}
+		announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos, "+ " 2º lugar: "+.@segundo$+"["+.@ranking2+"] pontos, "+"3º lugar:"+.@terceiro$+ "["+.@ranking3+"] pontos!",0,0x009ACD;
+		pvpoff "force_1-1";
+		mapannounce "force_1-1","O evento acabou! Você será teleportado para Prontera em 10 segundos!",bc_self,0xFF7F50;
+		sleep2 10000;
+		query_sql "UPDATE `rankingmodes` SET `temp` = '0'";
+		set $acontecendoaniquilador,0;
+		mapwarp "force_1-1","prontera",150,170;	
+		end;
+		
+		OnWhisperGlobal:
+		callsub OnCalll;
+		end;
+		
+	}
+	function	script	randnumber	{
+	set @s,0;
+	set @c$,"|";
+	
+	while(@s<getarg(0)){
+		do{
+			set @r,rand(getarg(1),getarg(2));
+		} while(compare(@c$,"|"+@r+"|"));
+		set @c$,@c$+@r+"|";
+		set @p[@s],@r;
+		set @s,@s+1;
+	}
+	return;
+}
+	
+	
+-	script	Resetador#Mensal	-1,{
+	OnClock0001:
+		if(gettime(5)==1){
+			query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '0'";
+		
+	}
+		end;
+	}
+	
+	
+	// alterado em src/map/pc 
+// linha 6990 até 7004 foram comentadas , 
+//guia > 
+//if(map[sd->bl.m].flag.pvp && !battle_config.pk_mode && !map[sd->bl.m].flag.pvp_nocalcrank) {
+													//sd->pvp_point -= 5;
+													
+													//RESOLVIDO COM O MAPFLAG NOCALCRANK
+//===== Mapflags: =============================================
+//force_1-1	mapflag pvp_nocalcrank
+force_1-1	mapflag	noreturn
+force_1-1	mapflag	nosave
+force_1-1	mapflag	noteleport
+force_1-1	mapflag	nowarpto
+force_1-1	mapflag	nowarp
+force_1-1	mapflag	nomemo
+force_1-1	mapflag	nopenalty
+force_1-1	mapflag	nobranch
+force_1-1	mapflag	pvp_noguild
+force_1-1	mapflag	noloot
+force_1-1	mapflag	noexp
+force_1-1	mapflag	pvp_NoCalcRank
+
+/*
+				--Configurações do npc -- 
+				
+CREATE TABLE IF NOT EXISTS `rankingmodes` (
+ `char_id` int(11) unsigned NOT NULL default '0',
+ `account_id` int(11) unsigned NOT NULL default '0',
+ `temp` int(11)  NOT NULL default '0',
+ `temp2` int(11)  NOT NULL default '0',
+ `aniquilador_mensal` int(11)  NOT NULL default '0',
+ `aniquilador_geral` int(11)  NOT NULL default '0',
+ PRIMARY KEY (`char_id`),
+ KEY `account_id` (`account_id`)
+) ENGINE=MyISAM;
+
+
+CREATE TABLE IF NOT EXISTS `premiacoes` (
+ `entrega_id` int(11) unsigned NOT NULL auto_increment,
+ `account_id` int(11) unsigned NOT NULL,
+ `nome` varchar(255) NOT NULL,
+ `premiador` varchar(255) NOT NULL,
+ `data` datetime NOT NULL default '00-00-0000 00:00:00',
+ `status` int(11) NOT NULL default '0',
+ `premio_id` int(11) NOT NULL default '0',
+ `quantidade` int(11) NOT NULL default '0',
+ `motivo` text(255) NOT NULL,
+ PRIMARY KEY (`entrega_id`),
+ KEY `account_id` (`account_id`) 
+) ENGINE=MyISAM;
+*/
+				
+//	@levelMin  - Level mínimo para entrar na arena. 
+/*
+prontera,152,183,5	script	Aniquilador	898,{
+set @levelMin , 98;
+set .npc$, "[ Aniquilador ]";
+goto L_Main;
+
+L_Main:
+	mes .npc$;
+	mes "Nesse momento há ^FF0000"+getmapusers("force_1-1")+"^000000 jogador(es) no evento.";
+	mes "Escolha o que deseja fazer.";
+	next;
+		switch(select("Ir para a Arena","Instruções","Rankings","Sair")){
+	case 1:
+		if ((BaseLevel >= @levelMin) && ($aberto == 1 )){
+						
+		
+				mes .npc$;
+				mes "Prepare-se para lutar!";
+				close2;
+				specialeffect 12;
+				specialeffect2 316;
+				pcblockmove getcharid(3),1;
+				sleep2 2000;
+				pcblockmove getcharid(3),0;
+				warp "force_1-1",100,100;
+				set .@pontos,0;
+				set #matou, 0;
+				mapannounce "force_1-1","O Jogador [ "+strcharinfo(0)+" ] entrou no [ Aniquilador ] !",bc_all,0xFF7F50;
+		break;
+				} else {
+				mes .npc$;
+				mes "Você não tem nível suficiente, ou a arena está fechada, verifique os horários de funcionamento.";
+				next;
+				goto L_Main;
+				}
+		close;
+		
+	case 2:
+			mes .npc$;
+			mes "HORÁRIO A SER DEFINIDO";
+			mes "Você deve matar a maior quantidade de inimigos!";
+			mes "Ao morrer, será ressussitado automaticamente em 10 segundos, NÃO volte ao ponto de retorno.";
+			mes "Uma vez que tenha saído da arena, não poderá voltar até que o próximo evento comece.";
+			next;
+			goto L_Main;
+		break;
+		
+	case 3:
+			switch(select("Ranking Geral","Ranking Mensal")){
+			case 1:
+			mes .npc$;
+			query_sql "SELECT `aniquilador_geral`, `account_id`, `char_id` FROM `rankingmodes`  ORDER BY `aniquilador_geral` DESC LIMIT 100",.@rank,.@account_id,.@charid;     
+			mes "Posição -> Nome -> Pontos ";
+			for(set @i,0; @i < getarraysize(.@rank);set @i,@i+1){
+				query_sql "SELECT `name` FROM `char` WHERE `char_id`='"+.@charid[@i]+"'",.@name$;
+				 mes"["+(@i+1)+"] -> "+.@name$+" ->   "+.@rank[@i]+"^000000";
+				}
+				next;
+				goto L_Main;
+				
+			case 2:
+			mes .npc$;
+			query_sql "SELECT `aniquilador_mensal`, `account_id`, `char_id` FROM `rankingmodes`  ORDER BY `aniquilador_mensal` DESC LIMIT 100",.@rank,.@account_id,.@charid;     
+			mes "Posição -> Nome -> Pontos ";
+			for(set @i,0;@i < getarraysize(.@rank);set @i,@i+1){
+				query_sql "SELECT `name` FROM `char` WHERE `char_id`='"+.@charid[@i]+"'",.@name$;
+				 mes"["+(@i+1)+"] -> "+.@name$+" ->   "+.@rank[@i]+"^000000";	
+				}
+				next;
+				goto L_Main;
+			}
+	
+	case 4:
+		mes .npc$;
+		mes "Esse evento é só para os fortes, dê o fora daqui!.";
+		close;
+	
+	}
+	
+	
+	
+}
+*/
+-	script	Arena_PvP#Kill	-1,{
+
+OnPCKillEvent:
+
+	getmapxy (@map$,@x,@y,0);
+		if((@map$ == "force_1-1")&& ($acontecendoaniquilador ==1)){
+			query_sql "SELECT `char_id` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@CID;
+		if(!.@CID){
+			query_sql "INSERT INTO `rankingmodes` (char_id,account_id)VALUES('"+getcharid(0)+"','"+getcharid(3)+"')";
+		}
+		if(#matou == killedrid) end;
+			set #matou, killedrid; 		
+	// -- temporario
+	query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
+	query_sql "UPDATE `rankingmodes` SET `temp` = '"+(.@pontos+1)+"' WHERE `char_id` = '"+getcharid(0)+"'";
+	query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
+	if((.@pontos) == 1 ||(.@pontos) == -1 ){ dispbottom "Você possui "+(.@pontos)+" ponto."; } else { dispbottom "Você possui "+(.@pontos)+" pontos."; }
+		end;
+	}
+	end;
+}
+
+    
+-	script	Arena_PvP#Die	-1,{
+
+OnPCDieEvent:
+
+	getmapxy (@map$,@x,@y,0);
+		if((@map$ == "force_1-1")&& ($acontecendoaniquilador ==1)){
+			query_sql "SELECT `char_id` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@CID;
+			if(!.@CID){
+				query_sql "INSERT INTO `rankingmodes` (char_id,account_id)VALUES('"+getcharid(0)+"','"+getcharid(3)+"')";
+			}	
+	
+	// -- temporário
+			query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
+			query_sql "UPDATE `rankingmodes` SET `temp` = '"+(.@pontos-1)+"' WHERE `char_id` = '"+getcharid(0)+"'";
+			query_sql "SELECT `temp` FROM `rankingmodes` WHERE `char_id` = '"+getcharid(0)+"'",.@pontos;
+ 
+	if((.@pontos) == 1 ||(.@pontos) == -1 ){ dispbottom "Você possui "+(.@pontos)+" ponto."; } else { dispbottom "Você possui "+(.@pontos)+" pontos."; }
+		dispbottom "[Aniquilador] Você será ressuscitado em 10 segundos.";
+	//	sleep2 1000; // 1 segundo
+		sleep2 10000; //10 segundos
+		atcommand "@alive"; 
+		end;
+	}
+	end;
+}
+
+-	script	Timers#abrir	-1,{
+	// ------------------abrir o evento---------------------
+	
+	OnClock9999: callsub OnCalll;
+	
+	
+	OnCalll:
+		set $aberto,1;
+		announce "O evento [Aniquilador] começará em 5 minutos, corram!",0,0x009ACD;
+		sleep2 240000;
+		announce "O Evento [Aniquilador] começará em 1 minuto, corram!",0,0x009ACD;
+		sleep2 60000;
+		if(getmapusers("force_1-1") < 3 ) {
+			set $aberto, 0;		
+			announce "O evento [Aniquilador] não alcançou o número mínimo de jogares (3), volte no próximo evento!",0,0x009ACD;
+			mapannounce "force_1-1","O evento acabou! Você será teleportado para Prontera em 10 segundos!",bc_self,0xFF7F50;
+			sleep2 10000;
+			query_sql "UPDATE `rankingmodes` SET `temp` = '0'";
+			mapwarp "force_1-1","prontera",150,170;
+			end; 
+		}
+		announce "O evento [Aniquilador] Já começou!",0,0x009ACD;
+		set $aberto, 0;  //fecha o evento
+		set $acontecendoaniquilador,1;
+		pvpon "force_1-1";
+		mapannounce "force_1-1","Você tem 15 minutos para mostrar seu valor!",bc_self,0xFF7F50;
+		
+		sleep2 900000;
+		//sleep2 60000; testes
+		announce "O evento [Aniquilador] Acabou, parabéns a todos!!",0,0x009ACD;
+		cleararray .@charid[0],0,999;
+		cleararray .@rank[0],0,999;
+		query_sql "SELECT `temp`, `char_id` FROM (SELECT `temp`,`char_id` FROM `rankingmodes` WHERE `temp`> 0 ORDER BY RAND())RESULTS ORDER BY `temp` DESC LIMIT 3",.@rank,.@charid; 
+		//query_sql "SELECT `temp`, `char_id` FROM `rankingmodes` WHERE `temp` > 0 ORDER BY `temp` DESC LIMIT 5",.@rank,.@charid;	
+		//query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid+"'",.@name$,.@account_id;
+		if(getarraysize(.@rank)==0 ){
+			set .@Empate,10;
+		}
+		if(getarraysize(.@rank)==1 ){set .@Empate,03;}
+		if(getarraysize(.@rank)==2 ){
+			 if (.@rank[0] == .@rank[1]){
+				set .@Empate,00;//1,2
+			 }
+			else  {set .@Empate,03;}
+		}
+		if(getarraysize(.@rank)==3 ){
+			if ((.@rank[0] == .@rank[1]) && (.@rank[1] == .@rank[2])) set .@Empate,02;//1,2,3 
+			else if ((.@rank[0] == .@rank[1]) && (.@rank[1] != .@rank[2])) set .@Empate,00;//1,2          00
+			else if ((.@rank[0] != .@rank[1]) && (.@rank[1] == .@rank[2]))  set .@Empate,01;//2,3                               
+			else set .@Empate,03;
+		}
+		if(.@Empate == 00){ 
+			announce "Houve empate entre os dois primeiros colocados, um sorteiro foi feito para definir o vencedor.",0,0x009ACD;
+			callfunc "randnumber",2,0,1;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == @p[0]  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i== @p[1] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == 2  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}	
+			}
+		}
+		if(.@Empate == 01){
+			announce "Houve empate entre o terceiro e o segundo colocado, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
+			callfunc "randnumber",2,1,2;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == 0  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==@p[0] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == @p[1]  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
+		}
+		if(.@Empate == 02){
+			announce "Houve empate entre os três primeiros colocados, um sorteiro foi feito para definir os vencedores.",0,0x009ACD;
+			callfunc "randnumber",3,0,2;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == @p[0]  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==@p[1] ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == @p[2]  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
+		}
+		if(.@Empate == 03){
+			announce "Uma vitória justa! Partida sem empates.",0,0x009ACD;
+			for(set .@i,0;.@i < getarraysize(.@rank);.@i++){
+				query_sql "SELECT `name`,`account_id` FROM `char` WHERE `char_id`='"+.@charid[.@i]+"'",.@name$,.@account_id;
+				if(.@i == 0  ) {
+					set .@primeiro$,.@name$;
+					set .@ranking1, .@rank[0];
+					set .@id_prem, 607;
+					set .@qtd,5;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(1)+"º Lugar Evento Aniquilador')"; 
+				}else if (.@i==1 ) {   
+					set .@segundo$,.@name$;
+					set .@ranking2, .@rank[1];
+					set .@id_prem, 607;
+					set .@qtd,3;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(2)+"º Lugar Evento Aniquilador')"; 
+				}else if(.@i == 2  ){  
+					set .@terceiro$,.@name$;
+					set .@ranking3, .@rank[2];
+					set .@id_prem, 607;
+					set .@qtd,2;
+					//atualiza o geral
+					query_sql "SELECT `aniquilador_geral` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@score;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_geral` = '"+(.@score+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					//atualiza o mensal
+					query_sql "SELECT `aniquilador_mensal` FROM `rankingmodes` WHERE `char_id` = '"+.@charid[.@i]+"'",.@scoreM;
+					query_sql "UPDATE `rankingmodes` SET `aniquilador_mensal` = '"+(.@scoreM+1)+"' WHERE `char_id` = '"+.@charid[.@i]+"'";
+					query_sql "INSERT INTO `premiacoes` (account_id,char_id, nome, premiador, status, premio_id, quantidade, motivo)"+"VALUES ('"+.@account_id+"','"+.@charid[.@i]+"', '"+.@name$+"', 'Evento Aniquilador' , '2' , '"+.@id_prem+"' , '"+.@qtd+"' , '"+(3)+"º Lugar Evento Aniquilador')"; 
+				}
+			}
+		}
+		if(.@Empate == 10){
+			set $acontecendoaniquilador,0;	
+			announce "Não houve vencedores no evento [ Aniquilador ], boa sorte na próxima!",0,0x009ACD;
+			mapannounce "force_1-1","O evento acabou! Você será teleportado para Prontera em 10 segundos!",bc_self,0xFF7F50;
+			sleep2 10000;
+			query_sql "UPDATE `rankingmodes` SET `temp` = '0'";
+			mapwarp "force_1-1","prontera",150,170;
+			end; 
 		}
 		
+		if(!.@terceiro$){
+			announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos, "+ " 2º lugar: "+.@segundo$+"["+.@ranking2+"] pontos",0,0x009ACD;
+		}
+		if(!.@segundo$){
+			announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos",0,0x009ACD;
+		}
 		announce "1º lugar: "+.@primeiro$+"["+.@ranking1+"] pontos, "+ " 2º lugar: "+.@segundo$+"["+.@ranking2+"] pontos, "+"3º lugar:"+.@terceiro$+ "["+.@ranking3+"] pontos!",0,0x009ACD;
 		pvpoff "force_1-1";
 		mapannounce "force_1-1","O evento acabou! Você será teleportado para Prontera em 10 segundos!",bc_self,0xFF7F50;
